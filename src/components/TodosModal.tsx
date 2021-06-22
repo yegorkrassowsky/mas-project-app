@@ -1,10 +1,11 @@
 import React, {useState} from 'react'
 import {connect} from 'react-redux'
-import {IState, IActive, ITodos, IName} from '../interfaces'
+import {IState, IActive, ITodos, IName, ILoading} from '../interfaces'
 import {ThunkDispatchType, CloseTodosType} from '../types'
 import {TodosLabels, TodosStatuses} from '../constants'
 import {closeTodosAction} from '../actions/todosActions'
 import TodosTable from './TodosTable'
+import Loader from './Loader'
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -16,10 +17,9 @@ import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
 
-
 type TodosModalProps = {
   closeTodos: CloseTodosType
-} & IActive & ITodos & IName
+} & IActive & ITodos & IName & ILoading
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-const TodosModal: React.FC<TodosModalProps> = ({active, todos, name, closeTodos}) => {
+const TodosModal: React.FC<TodosModalProps> = ({loading, active, todos, name, closeTodos}) => {
   const [statusFilter, setStatusFilter] = useState(0)
   const classes = useStyles()
   const filteredTodos = statusFilter === TodosStatuses.ALL ? todos : todos.filter(todo => {
@@ -83,17 +83,13 @@ const TodosModal: React.FC<TodosModalProps> = ({active, todos, name, closeTodos}
         </div>
       </DialogTitle>
       <DialogContent>
-        <TodosTable todos={filteredTodos} />
+        {loading ? <Loader/> : <TodosTable todos={filteredTodos} />}
       </DialogContent>
     </Dialog>
   )
 }
 
-const mapStateToProps = (state: IState) => ({
-  active: state.todos.active,
-  todos: state.todos.items,
-  name: state.todos.name,
-})
+const mapStateToProps = (state: IState) => ({...state.todos, todos: state.todos.items})
 
 const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({
   closeTodos: () => dispatch(closeTodosAction())

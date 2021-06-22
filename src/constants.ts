@@ -1,5 +1,6 @@
 export enum UsersActionTypes {
   SET = 'USERS_SET',
+  SET_LOADING = 'USERS_SET_LOADING',
 }
 
 export enum FilterActionTypes {
@@ -13,6 +14,7 @@ export enum TodosActionTypes {
   SET_USER = 'TODOS_SET_USER',
   OPEN = 'TODOS_OPEN',
   CLOSE = 'TODOS_CLOSE',
+  SET_LOADING = 'TODOS_SET_LOADING',
 }
 
 export enum TodosStatuses {

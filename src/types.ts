@@ -1,24 +1,29 @@
-import {IUser, IState, IUsername, IWebsite, IActive, ITodo, IUserSet} from './interfaces'
+import {IUser, IState, IUsername, IWebsite, IActive, ITodo, IUserSet, ILoading, IName} from './interfaces'
 import {UsersActionTypes, FilterActionTypes, TodosActionTypes} from './constants'
 import {ThunkDispatch} from 'redux-thunk'
 
-export type UsersState = IUser[]
+export type UsersState = {
+  items: IUser[]
+} & ILoading
+
 export type FilterParams = IUsername & IWebsite
+
 export type FilterState = {
   params: FilterParams
 } & IActive
+
 export type TodosState = {
   items: ITodo[]
   userId: number | null
-  name: string
-} & IActive
+} & IName & IActive & ILoading
 
-export type FilterUsersType = (users: UsersState, params: FilterParams) => UsersState
+export type FilterUsersType = (users: IUser[], params: FilterParams) => IUser[]
 
 // Action Types
 
 export type UsersAction =
-| {type: UsersActionTypes.SET, data: UsersState}
+| {type: UsersActionTypes.SET, data: IUser[]}
+| {type: UsersActionTypes.SET_LOADING, loading: boolean}
 
 export type FilterAction =
 | {type: FilterActionTypes.RESET}
@@ -30,6 +35,7 @@ export type TodosAction =
 | {type: TodosActionTypes.SET_USER, user: IUserSet}
 | {type: TodosActionTypes.OPEN}
 | {type: TodosActionTypes.CLOSE}
+| {type: TodosActionTypes.SET_LOADING, loading: boolean}
 
 export type ActionType = UsersAction | FilterAction | TodosAction
 
@@ -52,5 +58,7 @@ export type OpenTodosActionType = (user: IUserSet) => DispatchCallbackType
 
 // Actions
 
+export type SetLoadingActionType = (loading: boolean) => ActionType
 export type SetFilterActionType = (params: FilterParams) => FilterAction
 export type CloseTodosActionType = () => TodosAction
+export type SetUsersLoadingActionType = (loading: boolean) => UsersAction

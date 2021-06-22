@@ -6,6 +6,7 @@ const initialTodosState = {
   items: [],
   userId: null,
   name: '',
+  loading: false,
 }
 
 const todosReducer = (state: TodosState = initialTodosState, action: TodosAction) => {
@@ -18,6 +19,8 @@ const todosReducer = (state: TodosState = initialTodosState, action: TodosAction
       return {...state, active: true}
     case TodosActionTypes.CLOSE:
       return {...state, active: false}
+    case TodosActionTypes.SET_LOADING:
+      return {...state, loading: action.loading}
     default:
       return state
   }

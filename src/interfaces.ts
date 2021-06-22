@@ -8,6 +8,10 @@ export interface IActive {
   active: boolean
 }
 
+export interface ILoading {
+  loading: boolean
+}
+
 export interface IUsername {
   username: string
 }

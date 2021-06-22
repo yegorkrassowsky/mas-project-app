@@ -1,8 +1,9 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {UsersState, ThunkDispatchType, OpenTodosType, FilterUsersType} from '../types'
-import {IState, IUserSet} from '../interfaces'
+import {ThunkDispatchType, OpenTodosType, FilterUsersType} from '../types'
+import {IState, IUserSet, IUser, ILoading} from '../interfaces'
 import {openTodosAction} from '../actions/todosActions'
+import Loader from './Loader'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -13,9 +14,9 @@ import Paper from '@material-ui/core/Paper'
 import { makeStyles } from '@material-ui/core/styles'
 
 type UsersTableProps = {
-  users: UsersState
+  users: IUser[]
   openTodos: OpenTodosType
-}
+} & ILoading
 
 const useStyles = makeStyles({
   root: {
@@ -32,8 +33,11 @@ const useStyles = makeStyles({
   }
 })
 
-const UsersTable: React.FC<UsersTableProps> = ({users, openTodos}) => {
+const UsersTable: React.FC<UsersTableProps> = ({loading, users, openTodos}) => {
   const classes = useStyles()
+  if(loading) {
+    return <Loader/>
+  }
   return (
     <TableContainer className={classes.root} component={Paper}>
       <Table className={classes.table} size="small" aria-label="Users table">
@@ -77,7 +81,8 @@ const filterUsers: FilterUsersType = (users, params) => {
 }
 
 const mapStateToProps = (state: IState) => ({
-  users: state.filter.active ? filterUsers(state.users, state.filter.params) : state.users
+  loading: state.users.loading,
+  users: state.filter.active ? filterUsers(state.users.items, state.filter.params) : state.users.items
 })
 
 const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({

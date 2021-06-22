@@ -16,11 +16,12 @@ import Grid from '@material-ui/core/Grid'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 
 const useStyles = makeStyles((theme: Theme) => ({
-  root: {
+  form: {
     width: '100%',
     '& .MuiTextField-root': {
-      margin: theme.spacing(1),
+      marginBottom: theme.spacing(1),
       width: '50ch',
+      maxWidth: '100%',
     }
   },
   toggle: {
@@ -77,7 +78,7 @@ const UsersFilter: React.FC<UsersFilterProps> = ({active, setFilter, resetFilter
         />
         </AccordionSummary>
         <AccordionDetails>
-          <form className={classes.root} noValidate autoComplete="off" onSubmit={handleSubmit}>
+          <form className={classes.form} noValidate autoComplete="off" onSubmit={handleSubmit}>
             <Grid
               container
               direction="column"

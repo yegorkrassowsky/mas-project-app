@@ -18,15 +18,24 @@ type UsersTableProps = {
 }
 
 const useStyles = makeStyles({
+  root: {
+    marginBottom: '20px',
+  },
   table: {
     minWidth: 650,
+    '& .MuiTableCell-root': {
+      width: '25%',
+    }
   },
+  row: {
+    cursor: 'pointer',
+  }
 })
 
 const UsersTable: React.FC<UsersTableProps> = ({users, openTodos}) => {
   const classes = useStyles()
   return (
-    <TableContainer component={Paper}>
+    <TableContainer className={classes.root} component={Paper}>
       <Table className={classes.table} size="small" aria-label="Users table">
         <TableHead>
           <TableRow>
@@ -38,7 +47,7 @@ const UsersTable: React.FC<UsersTableProps> = ({users, openTodos}) => {
         </TableHead>
         <TableBody>
           {users.map((row) => (
-            <TableRow key={row.id} onClick={() => openTodos({id: row.id, name: row.name})}>
+            <TableRow className={classes.row} key={row.id} onClick={() => openTodos({id: row.id, name: row.name})}>
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.username}</TableCell>
               <TableCell>{row.email}</TableCell>

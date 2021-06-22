@@ -1,7 +1,6 @@
 import {Provider} from 'react-redux'
 import {store} from './store'
 import {fetchUsers} from './actions/usersActions'
-import './App.css'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import Container from '@material-ui/core/Container'
 import UsersFilter from './components/UsersFilter'

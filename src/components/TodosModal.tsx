@@ -10,6 +10,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button'
 import ButtonGroup from '@material-ui/core/ButtonGroup'
+import IconButton from '@material-ui/core/IconButton'
+import CloseIcon from '@material-ui/icons/Close'
+import Grid from '@material-ui/core/Grid'
+import Typography from '@material-ui/core/Typography'
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
 
 
@@ -19,8 +23,16 @@ type TodosModalProps = {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    root: {
+      '& .MuiDialog-paper': {
+        flex: 1,
+        height: '90%',
+      },
+    },
+    heading: {
+      marginTop: '12px'
+    },
     buttons: {
-      marginTop: '20px',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -44,9 +56,20 @@ const TodosModal: React.FC<TodosModalProps> = ({active, todos, name, closeTodos}
     return false
   })
   return (
-    <Dialog open={active} onClose={closeTodos} aria-labelledby="form-dialog-title">
+    <Dialog className={classes.root} open={active} onClose={closeTodos} aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title">
-        <>Задачи {name}</>
+        <Grid
+          container
+          direction="row"
+          justify="space-between"
+          alignItems="flex-start"
+          wrap="nowrap"
+        >
+          <Typography className={classes.heading} variant="body1">Задачи {name}</Typography>
+          <IconButton aria-label="close" onClick={closeTodos}>
+            <CloseIcon />
+          </IconButton>
+        </Grid>
         <div className={classes.buttons}>
           <ButtonGroup color="primary" aria-label="large outlined primary button group">
             {TodosLabels.map((status, index) => {

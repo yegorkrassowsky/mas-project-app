@@ -42,24 +42,24 @@ type UsersFilterProps = {
 }
 
 const UsersFilter: React.FC<UsersFilterProps> = ({active, setFilter, resetFilter, toggleFilter}) => {
-  const [username, setUsername] = useState('')
-  const [website, setWebsite] = useState('')
-  const changeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(e.currentTarget.value)
+  const [name, setName] = useState('')
+  const [post, setPost] = useState('')
+  const changeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.currentTarget.value)
   }
-  const changeWebsite = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setWebsite(e.currentTarget.value)
+  const changePost = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPost(e.currentTarget.value)
   }
   const handleReset = () => {
     resetFilter()
-    setUsername('')
-    setWebsite('')
+    setName('')
+    setPost('')
   }
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setUsername(prev => prev.trim())
-    setWebsite(prev => prev.trim())
-    setFilter({username, website})
+    setName(prev => prev.trim())
+    setPost(prev => prev.trim())
+    setFilter({name, post})
   }
   const classes = useStyles()
   return (
@@ -87,15 +87,15 @@ const UsersFilter: React.FC<UsersFilterProps> = ({active, setFilter, resetFilter
             >
               <TextField
                 id="filter-username-input"
-                label="Username"
-                value={username}
-                onChange={changeUsername}
+                label="Имя"
+                value={name}
+                onChange={changeName}
               />
               <TextField
                 id="filter-website-input"
-                label="Website"
-                value={website}
-                onChange={changeWebsite}
+                label="Должность"
+                value={post}
+                onChange={changePost}
               />
             </Grid>
             <Grid

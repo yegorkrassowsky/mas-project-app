@@ -4,8 +4,8 @@ import {FilterActionTypes} from '../constants'
 export const initialFilterState = {
   active: false,
   params: {
-    username: '',
-    website: '',
+    name: '',
+    post: '',
   }
 }
 
@@ -17,8 +17,8 @@ const filterReducer = (state: FilterState = initialFilterState, action: FilterAc
       return {
         ...state, 
         params: {
-          username: action.data.username.trim(),
-          website: action.data.website.trim()
+          name: action.data.name.trim(),
+          post: action.data.post.trim()
         }
       }
     case FilterActionTypes.TOGGLE:

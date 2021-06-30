@@ -43,19 +43,19 @@ const UsersTable: React.FC<UsersTableProps> = ({loading, users, openTodos}) => {
       <Table className={classes.table} size="small" aria-label="Users table">
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Username</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell>Website</TableCell>
+            <TableCell>Имя</TableCell>
+            <TableCell>Должность</TableCell>
+            <TableCell>Служебный телефон</TableCell>
+            <TableCell>Мобильный телефон</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {users.map((row) => (
             <TableRow className={classes.row} key={row.id} onClick={() => openTodos({id: row.id, name: row.name})}>
               <TableCell>{row.name}</TableCell>
-              <TableCell>{row.username}</TableCell>
-              <TableCell>{row.email}</TableCell>
-              <TableCell>{row.website}</TableCell>
+              <TableCell>{row.post}</TableCell>
+              <TableCell>{row.phone ? row.phone : '-'}</TableCell>
+              <TableCell>{row.mobile ? row.mobile : '-'}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -70,10 +70,10 @@ const includesIgnoringCase = (string: string, includes:string) => {
 
 const filterUsers: FilterUsersType = (users, params) => {
   return users.filter(user => {
-    if(params.username && ! includesIgnoringCase(user.username, params.username)) {
+    if(params.name && ! includesIgnoringCase(user.name, params.name)) {
       return false
     }
-    if(params.website && ! includesIgnoringCase(user.website, params.website)) {
+    if(params.post && ! includesIgnoringCase(user.post, params.post)) {
       return false
     }
     return true

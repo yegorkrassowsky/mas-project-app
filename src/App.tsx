@@ -1,13 +1,16 @@
 import {Provider} from 'react-redux'
+import {QueryClient, QueryClientProvider} from 'react-query'
 import {store} from './store'
-import {fetchUsers} from './actions/usersActions'
+// import {fetchUsers} from './actions/usersActions'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import Container from '@material-ui/core/Container'
 import UsersFilter from './components/UsersFilter'
 import UsersTable from './components/UsersTable'
 import TodosModal from './components/TodosModal'
 
-store.dispatch(fetchUsers())
+const queryClient = new QueryClient()
+
+// store.dispatch(fetchUsers())
 
 function App() {
   return (
@@ -16,9 +19,11 @@ function App() {
       <div className="App">
         <Container maxWidth="lg">
           <Provider store={store}>
-            <UsersFilter />
-            <UsersTable />
-            <TodosModal />
+            <QueryClientProvider client={queryClient}>
+              <UsersFilter />
+              <UsersTable />
+              <TodosModal />
+            </QueryClientProvider>
           </Provider>
         </Container>
       </div>

@@ -1,6 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {ThunkDispatchType, OpenTodosType, FilterUsersType} from '../types'
+import {useQuery} from 'react-query'
+import {ThunkDispatchType, OpenTodosType, FilterParams, FilterUsersType} from '../types'
 import {IState, IUserSet, IUser, ILoading} from '../interfaces'
 import {openTodosAction} from '../actions/todosActions'
 import Loader from './Loader'
@@ -12,11 +13,17 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import { makeStyles } from '@material-ui/core/styles'
+import {request} from '../store'
 
 type UsersTableProps = {
+  filter: FilterParams
   users: IUser[]
   openTodos: OpenTodosType
 } & ILoading
+
+type Params = {
+  [key: string]: string
+}
 
 const useStyles = makeStyles({
   root: {
@@ -33,11 +40,34 @@ const useStyles = makeStyles({
   }
 })
 
-const UsersTable: React.FC<UsersTableProps> = ({loading, users, openTodos}) => {
+export const fetchUsers = async (args: any) => {  
+  const [query, params] = args.queryKey
+  return request.get('/users', {
+    params
+  })
+    .then(response => {
+      if(response.data !== undefined) {
+        return response.data
+      }
+    })
+}
+
+const UsersTable: React.FC<UsersTableProps> = ({loading, users, openTodos, filter}) => {
+  const params: Params = {}
+  if(filter.username) params.username = filter.username
+  if(filter.website) params.website = filter.website
+  
+  const { isLoading, isError, data, error } = useQuery<IUser[]>(['users', params], fetchUsers)
+  
   const classes = useStyles()
-  if(loading) {
+  if(isLoading) {
     return <Loader/>
   }
+
+  if(isError) {
+    return <p>{`Error on loading: ${error}`}</p>
+  }
+
   return (
     <TableContainer className={classes.root} component={Paper}>
       <Table className={classes.table} size="small" aria-label="Users table">
@@ -50,7 +80,7 @@ const UsersTable: React.FC<UsersTableProps> = ({loading, users, openTodos}) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {users.map((row) => (
+          {data && data.map((row) => (
             <TableRow className={classes.row} key={row.id} onClick={() => openTodos({id: row.id, name: row.name})}>
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.username}</TableCell>
@@ -81,6 +111,7 @@ const filterUsers: FilterUsersType = (users, params) => {
 }
 
 const mapStateToProps = (state: IState) => ({
+  filter: state.filter.params,
   loading: state.users.loading,
   users: state.filter.active ? filterUsers(state.users.items, state.filter.params) : state.users.items
 })

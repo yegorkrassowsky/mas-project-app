@@ -1,4 +1,4 @@
-import {FilterState, UsersState, TodosState} from './types'
+import {FilterState, TodosState} from './types'
 
 export interface IID {
   id: number
@@ -43,7 +43,6 @@ export interface IUser extends IID, IName, IUsername, IWebsite {
 export interface IUserSet extends IID, IName {}
 
 export interface IState {
-  users: UsersState
   filter: FilterState
   todos: TodosState
 }

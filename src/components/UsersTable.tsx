@@ -1,8 +1,8 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {useQuery} from 'react-query'
-import {ThunkDispatchType, OpenTodosType, FilterParams, FilterUsersType} from '../types'
-import {IState, IUserSet, IUser, ILoading} from '../interfaces'
+import {ThunkDispatchType, OpenTodosType, FilterParams} from '../types'
+import {IState, IUserSet, IUser} from '../interfaces'
 import {openTodosAction} from '../actions/todosActions'
 import Loader from './Loader'
 import Table from '@material-ui/core/Table'
@@ -17,12 +17,7 @@ import {request} from '../store'
 
 type UsersTableProps = {
   filter: FilterParams
-  users: IUser[]
   openTodos: OpenTodosType
-} & ILoading
-
-type Params = {
-  [key: string]: string
 }
 
 const useStyles = makeStyles({
@@ -40,25 +35,26 @@ const useStyles = makeStyles({
   }
 })
 
-export const fetchUsers = async (args: any) => {  
-  const [query, params] = args.queryKey
+export const fetchUsers = async (filter: FilterParams): Promise<IUser[]> => {  
+  const params = Object.fromEntries(Object.entries(filter).filter(value => !!value[1]))
+  console.log('FETCHING USERS');
+  
   return request.get('/users', {
     params
   })
     .then(response => {
-      if(response.data !== undefined) {
-        return response.data
+      if(response.data === undefined) {
+        throw new Error('Error on fetching')
       }
+      return response.data
     })
 }
 
-const UsersTable: React.FC<UsersTableProps> = ({loading, users, openTodos, filter}) => {
-  const params: Params = {}
-  if(filter.username) params.username = filter.username
-  if(filter.website) params.website = filter.website
-  
-  const { isLoading, isError, data, error } = useQuery<IUser[]>(['users', params], fetchUsers)
-  
+const UsersTable: React.FC<UsersTableProps> = ({openTodos, filter}) => {
+  const { isLoading, isError, data, error } = useQuery<IUser[]>(['users', filter], () => {
+    return fetchUsers(filter)
+  })
+
   const classes = useStyles()
   if(isLoading) {
     return <Loader/>
@@ -94,26 +90,8 @@ const UsersTable: React.FC<UsersTableProps> = ({loading, users, openTodos, filte
   )
 }
 
-const includesIgnoringCase = (string: string, includes:string) => {
-  return string.toLowerCase().includes(includes.toLowerCase())
-}
-
-const filterUsers: FilterUsersType = (users, params) => {
-  return users.filter(user => {
-    if(params.username && ! includesIgnoringCase(user.username, params.username)) {
-      return false
-    }
-    if(params.website && ! includesIgnoringCase(user.website, params.website)) {
-      return false
-    }
-    return true
-  })
-}
-
 const mapStateToProps = (state: IState) => ({
   filter: state.filter.params,
-  loading: state.users.loading,
-  users: state.filter.active ? filterUsers(state.users.items, state.filter.params) : state.users.items
 })
 
 const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({

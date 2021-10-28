@@ -1,8 +1,5 @@
-import React, {useState} from 'react'
-import {connect} from 'react-redux'
-import {ThunkDispatchType, FilterParams, SetFilterType, ResetFilterType, ToggleFilterType} from '../types'
-import {IState} from '../interfaces'
-import {setFilterAction, resetFilterAction, toggleFilterAction} from '../actions/filterActions'
+import React, {useRef} from 'react'
+import {SetFilterType, ResetFilterType, ToggleFilterType} from '../types'
 import Box from '@material-ui/core/Box'
 import Accordion from '@material-ui/core/Accordion'
 import AccordionSummary from '@material-ui/core/AccordionSummary'
@@ -42,24 +39,17 @@ type UsersFilterProps = {
 }
 
 const UsersFilter: React.FC<UsersFilterProps> = ({active, setFilter, resetFilter, toggleFilter}) => {
-  const [username, setUsername] = useState('')
-  const [website, setWebsite] = useState('')
-  const changeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(e.currentTarget.value)
-  }
-  const changeWebsite = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setWebsite(e.currentTarget.value)
-  }
+  const username = useRef<HTMLInputElement>()
+  const website = useRef<HTMLInputElement>()
   const handleReset = () => {
     resetFilter()
-    setUsername('')
-    setWebsite('')
   }
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setUsername(prev => prev.trim())
-    setWebsite(prev => prev.trim())
-    setFilter({username, website})
+    setFilter({
+      username: username.current!.value,
+      website: website.current!.value,
+    })
   }
   const classes = useStyles()
   return (
@@ -88,14 +78,12 @@ const UsersFilter: React.FC<UsersFilterProps> = ({active, setFilter, resetFilter
               <TextField
                 id="filter-username-input"
                 label="Username"
-                value={username}
-                onChange={changeUsername}
+                inputRef={username}
               />
               <TextField
                 id="filter-website-input"
                 label="Website"
-                value={website}
-                onChange={changeWebsite}
+                inputRef={website}
               />
             </Grid>
             <Grid
@@ -115,14 +103,4 @@ const UsersFilter: React.FC<UsersFilterProps> = ({active, setFilter, resetFilter
   )
 }
 
-const mapStateToProps = (state: IState) => ({
-  active: state.filter.active
-})
-
-const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({
-  setFilter: (params: FilterParams) => dispatch(setFilterAction(params)),
-  resetFilter: () => dispatch(resetFilterAction()),
-  toggleFilter: () => dispatch(toggleFilterAction())
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(UsersFilter)
+export default UsersFilter

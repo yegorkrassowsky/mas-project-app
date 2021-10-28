@@ -1,9 +1,7 @@
-import React from 'react'
-import {connect} from 'react-redux'
+import React, {useState} from 'react'
 import {useQuery} from 'react-query'
-import {ThunkDispatchType, OpenTodosType, FilterParams} from '../types'
-import {IState, IUserSet, IUser} from '../interfaces'
-import {openTodosAction} from '../actions/todosActions'
+import {OpenTodosType, FilterParams} from '../types'
+import {IUser} from '../interfaces'
 import Loader from './Loader'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -13,12 +11,11 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import { makeStyles } from '@material-ui/core/styles'
+import {useGlobalState} from '../store'
 import {request} from '../store'
+import UsersFilter from './UsersFilter'
 
-type UsersTableProps = {
-  filter: FilterParams
-  openTodos: OpenTodosType
-}
+type UsersTableProps = {}
 
 const useStyles = makeStyles({
   root: {
@@ -50,9 +47,27 @@ export const fetchUsers = async (filter: FilterParams): Promise<IUser[]> => {
     })
 }
 
-const UsersTable: React.FC<UsersTableProps> = ({openTodos, filter}) => {
-  const { isLoading, isError, data, error } = useQuery<IUser[]>(['users', filter], () => {
-    return fetchUsers(filter)
+const defaultFilter = {
+  username: '',
+  website: '',
+}
+
+const UsersTable: React.FC<UsersTableProps> = () => {
+  const {todos} = useGlobalState()
+  const openTodos: OpenTodosType = ({userId, name}) => {
+    todos.set({
+      active: true,
+      userId,
+      name,
+    })
+  }
+  const [filter, setFilter] = useState<FilterParams>(defaultFilter)
+  const [filterActive, setFilterActive] = useState(false)
+  const toggleFilter = () => setFilterActive(prev => !prev)
+  const handleFilter = (filter: FilterParams) => setFilter(filter)
+  const resetFilter = () => setFilter(defaultFilter)
+  const { isLoading, isError, data, error } = useQuery<IUser[]>(['users', filter, filterActive], () => {
+    return fetchUsers(filterActive ? filter : defaultFilter)
   })
 
   const classes = useStyles()
@@ -65,37 +80,32 @@ const UsersTable: React.FC<UsersTableProps> = ({openTodos, filter}) => {
   }
 
   return (
-    <TableContainer className={classes.root} component={Paper}>
-      <Table className={classes.table} size="small" aria-label="Users table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Username</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell>Website</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data && data.map((row) => (
-            <TableRow className={classes.row} key={row.id} onClick={() => openTodos({id: row.id, name: row.name})}>
-              <TableCell>{row.name}</TableCell>
-              <TableCell>{row.username}</TableCell>
-              <TableCell>{row.email}</TableCell>
-              <TableCell>{row.website}</TableCell>
+    <>
+      <UsersFilter active={filterActive} toggleFilter={toggleFilter} setFilter={handleFilter} resetFilter={resetFilter} />
+      <TableContainer className={classes.root} component={Paper}>
+        <Table className={classes.table} size="small" aria-label="Users table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Username</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Website</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {data && data.map((row) => (
+              <TableRow className={classes.row} key={row.id} onClick={() => openTodos({userId: row.id, name: row.name})}>
+                <TableCell>{row.name}</TableCell>
+                <TableCell>{row.username}</TableCell>
+                <TableCell>{row.email}</TableCell>
+                <TableCell>{row.website}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   )
 }
 
-const mapStateToProps = (state: IState) => ({
-  filter: state.filter.params,
-})
-
-const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({
-  openTodos: (user: IUserSet) => dispatch(openTodosAction(user)) 
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(UsersTable)
+export default UsersTable

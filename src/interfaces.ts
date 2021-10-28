@@ -4,6 +4,10 @@ export interface IID {
   id: number
 }
 
+export interface IUserId {
+  userId: number
+}
+
 export interface IActive {
   active: boolean
 }
@@ -40,9 +44,8 @@ export interface IUser extends IID, IName, IUsername, IWebsite {
   email: string
 }
 
-export interface IUserSet extends IID, IName {}
+export interface IUserSet extends IUserId, IName {}
 
 export interface IState {
-  filter: FilterState
   todos: TodosState
 }

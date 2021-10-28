@@ -1,9 +1,6 @@
 import React, {useState} from 'react'
-import {connect} from 'react-redux'
-import {IState, IActive, ITodo, IName} from '../interfaces'
-import {ThunkDispatchType, CloseTodosType} from '../types'
+import {ITodo} from '../interfaces'
 import {TodosLabels, TodosStatuses} from '../constants'
-import {closeTodosAction} from '../actions/todosActions'
 import TodosTable from './TodosTable'
 import Loader from './Loader'
 import Dialog from '@material-ui/core/Dialog';
@@ -17,12 +14,9 @@ import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
 import {useQuery} from 'react-query'
-import {request} from '../store'
+import {useGlobalState, request} from '../store'
 
-type TodosModalProps = {
-  userId: number
-  closeTodos: CloseTodosType
-} & IActive & IName
+type TodosModalProps = {}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -57,7 +51,10 @@ const fetchTodos = async (userId: number): Promise<ITodo[]> => {
     })
 }
 
-const TodosModal: React.FC<TodosModalProps> = ({active, userId, name, closeTodos}) => {
+const TodosModal: React.FC<TodosModalProps> = () => {
+  const {todos} = useGlobalState()
+  const {userId, active, name} = todos.get()
+  const closeTodos = () => todos.active.set(false)
   const [statusFilter, setStatusFilter] = useState(0)
   const classes = useStyles()
   const { isLoading, data = [], isError, error } = useQuery<ITodo[]>(['todos', userId], () => {
@@ -108,10 +105,4 @@ const TodosModal: React.FC<TodosModalProps> = ({active, userId, name, closeTodos
   )
 }
 
-const mapStateToProps = (state: IState) => ({...state.todos})
-
-const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({
-  closeTodos: () => dispatch(closeTodosAction())
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(TodosModal)
+export default TodosModal

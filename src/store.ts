@@ -1,18 +1,19 @@
-import rootReducer from './reducers/root'
-import {IState} from './interfaces'
-import {ActionType} from './types'
 import axios from 'axios'
-import { createStore, applyMiddleware, Store } from 'redux'
-import thunk, {ThunkAction} from 'redux-thunk'
+import { createState, useState } from '@hookstate/core';
 
-declare module 'redux' {
-  interface Dispatch<A extends Action = AnyAction> {
-    <S, E, R>(asyncAction: ThunkAction<R, S, E, A>): R;
-  }
+const initialTodosState = {
+  active: false,
+  userId: -1,
+  name: '',
 }
+
+const globalState = createState({
+  todos: initialTodosState,
+});
+
+export const useGlobalState = () => useState(globalState)
+
 export const request = axios.create({
   baseURL: 'https://jsonplaceholder.typicode.com',
   withCredentials: true,
 })
-
-export const store: Store<IState, ActionType> = createStore(rootReducer, applyMiddleware(thunk))
